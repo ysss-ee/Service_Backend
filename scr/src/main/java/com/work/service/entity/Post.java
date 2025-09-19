@@ -26,4 +26,5 @@ public class Post {
     private String comment;
     private Timestamp createTime;
     private Integer state;
+    private Integer acceptUserId;
 }

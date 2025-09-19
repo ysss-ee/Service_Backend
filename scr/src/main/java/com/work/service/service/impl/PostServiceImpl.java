@@ -81,7 +81,13 @@ public class PostServiceImpl implements PostService {
         LambdaQueryWrapper<Post> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.ne(Post::getLevel, 0).ne(Post::getState, 2);
         queryWrapper.orderByAsc(Post::getLevel);
-        return postMapper.selectList(queryWrapper);
+        List<Post> posts = postMapper.selectList(queryWrapper);
+        for (Post post : posts) {
+            if (post.getHide() == 1) {
+                post.setUserId(-1);
+            }
+        }
+        return posts;
     }
 
     @Override
@@ -98,8 +104,20 @@ public class PostServiceImpl implements PostService {
         checkPermission(userId);
         Post post = getPostIfExists(postId);
         post.setState(2);
+        post.setAcceptUserId(userId);
         postMapper.updateById(post);
 
+    }
+    @Override
+    public List<Post> getAcceptPosts(Integer userId) {
+        checkPermission(userId);
+        List<Post> posts = postMapper.selectList(new LambdaQueryWrapper<Post>().eq(Post::getAcceptUserId, userId));
+        for (Post post : posts) {
+            if (post.getHide() == 1) {
+                post.setUserId(-1);
+            }
+        }
+        return posts;
     }
 
 }
