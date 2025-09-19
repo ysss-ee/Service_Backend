@@ -56,6 +56,11 @@ public class PostController {
         postService.acceptPost(accept.getUserId(), accept.getPostId());
         return Result.success();
     }
+    @GetMapping("/admin/select")
+    public Result<List<Post>> getAcceptPosts(@RequestParam Integer userId) {
+        List<Post> posts = postService.getAcceptPosts(userId);
+        return Result.success(posts);
+    }
 
 
 

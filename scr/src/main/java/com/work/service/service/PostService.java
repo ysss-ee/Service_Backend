@@ -17,4 +17,5 @@ public interface PostService {
     List<Post> getPosts(Integer userId);
     void response(Integer userId, Integer postId, String response);
     void acceptPost(Integer userId, Integer postId);
+    List<Post> getAcceptPosts(Integer userId);
 }
