@@ -3,8 +3,6 @@ package com.work.service.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class User {
-    @TableId(value = "userId", type =  IdType.AUTO)
+    @TableId(value = "userId" ,type = IdType.AUTO )
     private Integer userId;
 
     private String username;
@@ -33,4 +31,13 @@ public class User {
     private String email;
 
     private String picture;
+
+    private String college;
+
+    private String major;
+
+    private String grade;
+
+    private String phone;
+
 }
