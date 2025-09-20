@@ -44,9 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(Integer id,String object,String content){
-        LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
-        userQueryWrapper.eq(User::getUserId, id);
-        User user=userMapper.selectOne(userQueryWrapper);
+        User user=userMapper.selectById(id);
         if(user==null){
             return;
         }else{
@@ -88,9 +86,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void manage(Integer id, Integer userType){
-        LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
-        userQueryWrapper.eq(User::getUserId, id);
-        User user=userMapper.selectOne(userQueryWrapper);
+        User user=userMapper.selectById(id);
         if(user==null){
             return;
         }else{
