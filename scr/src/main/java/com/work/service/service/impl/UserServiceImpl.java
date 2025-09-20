@@ -1,4 +1,4 @@
-package com.work.service.service.impl;
+package com.github.reaper6767.demoproject.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.reaper6767.demoproject.entity.User;
@@ -65,6 +65,19 @@ public class UserServiceImpl implements UserService {
                     break;
                 case "picture":
                     user.setPicture(content);
+                    break;
+                case "college":
+                    user.setCollege(content);
+                    break;
+                case "major":
+                    user.setMajor(content);
+                    break;
+                case "grade":
+                    user.setGrade(content);
+                    break;
+                case "phone":
+                    user.setPhone(content);
+                    break;
                 default:
                     return;
             }
