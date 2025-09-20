@@ -1,7 +1,13 @@
 package com.work.service.service.impl;
 
+import com.work.service.entity.User;
+import com.work.service.mapper.UserMapper;
 import com.work.service.service.AvatarUploadService;
+
+import java.nio.file.Files;
 import java.nio.file.Path;
+
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
@@ -20,6 +26,8 @@ public class AvatarUploadServiceImpl implements AvatarUploadService {
 
     @Value("${file.upload.dir}")
     private String uploadDir;
+    @Resource
+    private UserMapper userMapper;
 
     private static final String[] ALLOWED_CONTENT_TYPES = {
             "image/jpeg", "image/png", "image/gif", "image/jpg"
@@ -32,14 +40,21 @@ public class AvatarUploadServiceImpl implements AvatarUploadService {
     public  String saveAvatar(MultipartFile file, String userId) throws IOException {
         validateFile(file);
         Path userDir = Paths.get(uploadDir, "avatars", userId);
+        //创建用户目录（如果不存在）
+        if (!Files.exists(userDir)) {
+            Files.createDirectories(userDir);
+        }
 
-        //生产唯一文件名
-        String originalFileName = file.getOriginalFilename();
-        String fileExtension = getFileExtension(originalFileName);
-        String uniqueFileName = UUID.randomUUID() + "." + fileExtension;
+        //使用固定文件名，新文件自动覆盖旧文件
+        String fileExtension = getFileExtension(file.getOriginalFilename());
+        String uniqueFileName = "avatar." + fileExtension;
+
 
         Path filePath = userDir.resolve(uniqueFileName);
         processAndSaveImage(file, filePath);
+        User user = userMapper.selectById(userId);
+        user.setPicture(getAvatarUrl(userId, uniqueFileName));
+        userMapper.updateById(user);
         return uniqueFileName;
     }
     /**
@@ -86,6 +101,7 @@ public class AvatarUploadServiceImpl implements AvatarUploadService {
         return Arrays.stream(ALLOWED_CONTENT_TYPES)
                 .anyMatch(allowed -> allowed.equalsIgnoreCase(contentType));
     }
+
 
 
     /**

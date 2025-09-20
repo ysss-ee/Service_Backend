@@ -1,6 +1,6 @@
 package com.work.service.controller;
 
-import com.work.service.dto.Result;
+import com.work.service.Result.AjaxResult;
 import com.work.service.dto.request.AcceptRequest;
 import com.work.service.dto.request.CommentRequest;
 import com.work.service.dto.request.PublishRequest;
@@ -22,44 +22,44 @@ public class PostController {
     private PostService postService;
 
     @PostMapping("/student/post")
-    public Result<Void> publishPost(@Valid @RequestBody PublishRequest post) {
+    public AjaxResult<Void> publishPost(@Valid @RequestBody PublishRequest post) {
         postService.publish( post.getUserId(), post.getTitle(), post.getContent(), post.getLevel(), post.getHide());
-        return Result.success();
+        return AjaxResult.success();
     }
 
     @GetMapping("/student/post")
-    public Result<List<Post>> checkPost(@RequestParam Integer userId) {
+    public AjaxResult<List<Post>> checkPost(@RequestParam Integer userId) {
         List<Post> posts = postService.check(userId);
-        return Result.success(posts);
+        return AjaxResult.success(posts);
     }
 
     @PostMapping("/student/comment")
-    public Result<Void> comment(@Valid @RequestBody CommentRequest comment) {
+    public AjaxResult<Void> comment(@Valid @RequestBody CommentRequest comment) {
         postService.comment(comment.getUserId(), comment.getPostId(), comment.getContent());
-        return Result.success();
+        return AjaxResult.success();
     }
 
     @GetMapping("/admin/getAllPosts")
-    public Result<List<Post>> getPosts(@RequestParam Integer userId) {
+    public AjaxResult<List<Post>> getPosts(@RequestParam Integer userId) {
         List<Post> posts =postService.getPosts(userId);
-        return Result.success(posts);
+        return AjaxResult.success(posts);
     }
 
     @PostMapping("/admin/response")
-    public Result<Void> response(@Valid @RequestBody ResponseRequest response) {
+    public AjaxResult<Void> response(@Valid @RequestBody ResponseRequest response) {
         postService.response(response.getUserId(), response.getPostId(), response.getContent());
-        return Result.success();
+        return AjaxResult.success();
     }
 
     @PutMapping("/admin/acceptPost")
-    public Result<Void> acceptPost(@Valid @RequestBody AcceptRequest accept) {
+    public AjaxResult<Void> acceptPost(@Valid @RequestBody AcceptRequest accept) {
         postService.acceptPost(accept.getUserId(), accept.getPostId());
-        return Result.success();
+        return AjaxResult.success();
     }
     @GetMapping("/admin/select")
-    public Result<List<Post>> getAcceptPosts(@RequestParam Integer userId) {
+    public AjaxResult<List<Post>> getAcceptPosts(@RequestParam Integer userId) {
         List<Post> posts = postService.getAcceptPosts(userId);
-        return Result.success(posts);
+        return AjaxResult.success(posts);
     }
 
 
