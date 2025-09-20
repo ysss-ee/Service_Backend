@@ -1,7 +1,7 @@
 package com.work.service.handler;
 
+import com.work.service.Result.AjaxResult;
 import com.work.service.constant.ExceptionEnum;
-import com.work.service.dto.Result;
 import com.work.service.util.HandlerUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public Result<String> handleException(Exception e) {
+    public AjaxResult<String> handleException(Exception e) {
         HandlerUtils.logException(e);
-        return Result.error(ExceptionEnum.SERVER_ERROR);
+        return AjaxResult.error(ExceptionEnum.SERVER_ERROR);
     }
 
 }

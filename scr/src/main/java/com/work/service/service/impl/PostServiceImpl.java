@@ -29,7 +29,9 @@ public class PostServiceImpl implements PostService {
     @Resource
     private UserMapper userMapper;
 
-    // 检查帖子是否存在
+    /**
+     * 检查帖子是否存在
+     */
     private Post getPostIfExists(Integer postId) {
         Post post = postMapper.selectById(postId);
         if (post == null) {
@@ -37,15 +39,21 @@ public class PostServiceImpl implements PostService {
         }
         return post;
     }
-    //检查权限
+
+    /**
+     * 检查权限
+     */
     private void checkPermission(Integer userId) {
         User user = userMapper.selectById(userId);
-        if (user.getUserType() != 2&&user.getUserType() != 3) {
+        Integer type = user.getUserType();
+        if (type != 2&&type!= 3) {
             throw new ApiException(ExceptionEnum.PERMISSION_NOT_ALLOWED);
         }
     }
 
-
+    /**
+     * 发布帖子
+     */
     @Override
     public void publish(Integer userId, String title, String content, Integer level, Integer hide) {
         Post post = Post.builder()
@@ -57,29 +65,43 @@ public class PostServiceImpl implements PostService {
                 .build();
         postMapper.insert(post);
     }
-
+    /**
+     * 查看自己帖子
+     */
     @Override
     public List<Post> check(Integer userId) {
         List<Post> posts = postMapper.selectList(new LambdaQueryWrapper<Post>().eq(Post::getUserId, userId));
-        if (posts.isEmpty() && userMapper.selectById(userId) == null) {
+        if (posts.isEmpty()) {
             throw new ApiException(ExceptionEnum.RESOURCE_NOT_FOUND);
         }
         return posts;
     }
-
+    /**
+     * 评论帖子
+     */
     @Override
     public void comment(Integer userId, Integer postId, String comment) {
         Post post = getPostIfExists(postId);
-        String oldComment = post.getComment();
-        post.setComment( userId+":"+comment+"\n"+oldComment);
+        StringBuilder newComment = new StringBuilder();
+        if (post.getComment() != null && !post.getComment().isEmpty()) {
+            newComment.append(post.getComment()).append("\n");
+        }
+        newComment.append(userId).append(":").append(comment);
+        post.setComment(newComment.toString());
         postMapper.updateById(post);
     }
-
+    /**
+     * 获取帖子
+     */
     @Override
     public List<Post> getPosts(Integer userId) {
         checkPermission(userId);
+        Integer type = userMapper.selectById(userId).getUserType();
         LambdaQueryWrapper<Post> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.ne(Post::getLevel, 0).ne(Post::getState, 2);
+        queryWrapper.ne(Post::getLevel, 0);
+        if(type == 2){
+            queryWrapper.ne(Post::getState, 2);
+        }
         queryWrapper.orderByAsc(Post::getLevel);
         List<Post> posts = postMapper.selectList(queryWrapper);
         for (Post post : posts) {
@@ -89,16 +111,24 @@ public class PostServiceImpl implements PostService {
         }
         return posts;
     }
-
+    /**
+     * 管理员回复帖子
+     */
     @Override
     public void response(Integer userId, Integer postId, String response) {
         checkPermission(userId);
         Post post = getPostIfExists(postId);
-        String oldResponse = post.getResponse();
-        post.setResponse(userId+":"+response+"\n"+oldResponse);
+        StringBuilder newResponse = new StringBuilder();
+        if (post.getResponse() != null && !post.getResponse().isEmpty()) {
+            newResponse.append(post.getResponse()).append("\n");
+        }
+        newResponse.append(userId).append(":").append(response);
+        post.setComment(newResponse.toString());
         postMapper.updateById(post);
     }
-
+    /**
+     * 接单
+     */
     @Override
     public void acceptPost(Integer userId, Integer postId) {
         checkPermission(userId);
@@ -108,6 +138,9 @@ public class PostServiceImpl implements PostService {
         postMapper.updateById(post);
 
     }
+    /**
+     * 获取接单的帖子
+     */
     @Override
     public List<Post> getAcceptPosts(Integer userId) {
         checkPermission(userId);
@@ -118,6 +151,14 @@ public class PostServiceImpl implements PostService {
             }
         }
         return posts;
+    }
+
+    @Override
+    public void deleteAccept(Integer userId, Integer postId) {
+        Post post = getPostIfExists(postId);
+        post.setState(1);
+        post.setAcceptUserId(null);
+        postMapper.updateById(post);
     }
 
 }

@@ -1,7 +1,7 @@
 package com.work.service.handler;
 
+import com.work.service.Result.AjaxResult;
 import com.work.service.constant.ExceptionEnum;
-import com.work.service.dto.Result;
 import com.work.service.util.HandlerUtils;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.springframework.core.annotation.Order;
@@ -24,9 +24,9 @@ public class ValidateExceptionHandler {
             ServletRequestBindingException.class
     })
     @ResponseBody
-    public Result<Object> handleVaildateException(Exception e) {
+    public AjaxResult<Object> handleVaildateException(Exception e) {
         HandlerUtils.logException(e);
-        return Result.error(ExceptionEnum.INVALID_PARAMETER);
+        return AjaxResult.error(ExceptionEnum.INVALID_PARAMETER);
     }
 
 
@@ -35,9 +35,9 @@ public class ValidateExceptionHandler {
             HttpRequestMethodNotSupportedException.class
     })
     @ResponseBody
-    public Result<Object> handleNoFoundException(Exception e) {
+    public AjaxResult<Object> handleNoFoundException(Exception e) {
         HandlerUtils.logException(e);
-        return Result.error(ExceptionEnum.NOT_FOUND_ERROR);
+        return AjaxResult.error(ExceptionEnum.NOT_FOUND_ERROR);
     }
 }
 
