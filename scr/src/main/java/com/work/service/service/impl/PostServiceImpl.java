@@ -65,6 +65,16 @@ public class PostServiceImpl implements PostService {
                 .build();
         postMapper.insert(post);
     }
+
+    /**
+     * 帖子上传图片
+     */
+    @Override
+    public void postImage(Integer postId, String imageUrl) {
+        Post post = postMapper.selectById(postId);
+        post.setImage(imageUrl);
+        postMapper.updateById( post);
+    }
     /**
      * 查看自己帖子
      */
@@ -152,7 +162,9 @@ public class PostServiceImpl implements PostService {
         }
         return posts;
     }
-
+    /**
+     * 取消接单
+     */
     @Override
     public void deleteAccept(Integer userId, Integer postId) {
         Post post = getPostIfExists(postId);

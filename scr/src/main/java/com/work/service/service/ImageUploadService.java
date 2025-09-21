@@ -7,12 +7,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @Service
-public interface AvatarUploadService {
-    String saveAvatar (MultipartFile file, String userId) throws IOException;
+public interface ImageUploadService {
+    String saveAvatar (MultipartFile file,String type, String userId) throws IOException;
     void processAndSaveImage(MultipartFile file, Path filePath) throws  IOException;
     boolean isAllowedContentType(String contentType);
     String getFileExtension(String fileName);
     String getFormatName(String fileName);
-    String getAvatarUrl(String userId, String fileName);
+    String getUrl(Integer id,String type, String fileName);
 
 }
