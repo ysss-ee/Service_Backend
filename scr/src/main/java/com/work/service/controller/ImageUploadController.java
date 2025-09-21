@@ -7,7 +7,6 @@ import com.work.service.service.PostService;
 import com.work.service.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +22,7 @@ public class ImageUploadController {
     private ImageUploadService imageUploadService;
     @Resource
     private UserService userService;
-    @Autowired
+    @Resource
     private PostService postService;
 
     /**
