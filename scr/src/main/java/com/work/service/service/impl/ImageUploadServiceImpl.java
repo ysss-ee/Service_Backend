@@ -1,8 +1,7 @@
 package com.work.service.service.impl;
 
-import com.work.service.entity.User;
 import com.work.service.mapper.UserMapper;
-import com.work.service.service.AvatarUploadService;
+import com.work.service.service.ImageUploadService;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,17 +16,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AvatarUploadServiceImpl implements AvatarUploadService {
+public class ImageUploadServiceImpl implements ImageUploadService {
 
     @Value("${file.upload.dir}")
     private String uploadDir;
-    @Resource
-    private UserMapper userMapper;
 
     private static final String[] ALLOWED_CONTENT_TYPES = {
             "image/jpeg", "image/png", "image/gif", "image/jpg"
@@ -37,9 +33,9 @@ public class AvatarUploadServiceImpl implements AvatarUploadService {
      * 总逻辑
      */
     @Override
-    public  String saveAvatar(MultipartFile file, String userId) throws IOException {
+    public  String saveAvatar(MultipartFile file,String type,String userId) throws IOException {
         validateFile(file);
-        Path userDir = Paths.get(uploadDir, "avatars", userId);
+        Path userDir = Paths.get(uploadDir,type, userId);
         //创建用户目录（如果不存在）
         if (!Files.exists(userDir)) {
             Files.createDirectories(userDir);
@@ -47,14 +43,11 @@ public class AvatarUploadServiceImpl implements AvatarUploadService {
 
         //使用固定文件名，新文件自动覆盖旧文件
         String fileExtension = getFileExtension(file.getOriginalFilename());
-        String uniqueFileName = "avatar." + fileExtension;
+        String uniqueFileName = type+ "." + fileExtension;
 
 
         Path filePath = userDir.resolve(uniqueFileName);
         processAndSaveImage(file, filePath);
-        User user = userMapper.selectById(userId);
-        user.setPicture(getAvatarUrl(userId, uniqueFileName));
-        userMapper.updateById(user);
         return uniqueFileName;
     }
     /**
@@ -133,7 +126,7 @@ public class AvatarUploadServiceImpl implements AvatarUploadService {
      * 获取头像的URL路径
      */
     @Override
-    public String getAvatarUrl(String userId, String fileName) {
-        return "/avatars/" + userId + "/" + fileName;
+    public String getUrl(Integer id,String type, String fileName) {
+        return "/"+type+"/" + id + "/" + fileName;
     }
 }
