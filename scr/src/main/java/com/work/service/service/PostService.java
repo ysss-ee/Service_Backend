@@ -12,10 +12,12 @@ import java.util.List;
 @Service
 public interface PostService {
     void publish(Integer  userId, String title, String content, Integer level, Integer hide);
+    void postImage(Integer postId, String ImageUrl);
     List<Post> check(Integer userId);
     void comment(Integer userId, Integer postId, String comment);
     List<Post> getPosts(Integer userId);
     void response(Integer userId, Integer postId, String response);
     void acceptPost(Integer userId, Integer postId);
     List<Post> getAcceptPosts(Integer userId);
+    void deleteAccept(Integer userId, Integer postId);
 }
