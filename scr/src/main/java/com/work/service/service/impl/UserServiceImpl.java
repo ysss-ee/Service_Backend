@@ -1,9 +1,11 @@
-package com.github.reaper6767.demoproject.service.impl;
+package com.work.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.github.reaper6767.demoproject.entity.User;
-import com.github.reaper6767.demoproject.mapper.UserMapper;
-import com.github.reaper6767.demoproject.service.UserService;
+import com.work.service.constant.ExceptionEnum;
+import com.work.service.entity.User;
+import com.work.service.exception.ApiException;
+import com.work.service.mapper.UserMapper;
+import com.work.service.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +21,10 @@ public class UserServiceImpl implements UserService {
         userQueryWrapper.eq(User::getUsername, userName);
         User user=userMapper.selectOne(userQueryWrapper);
         if(user==null){
-           return 0;
+           throw new ApiException(ExceptionEnum.WRONG_USERNAME_OR_PASSWORD);
         }else{
             if(!user.getPassword().equals(password)) {
-                return -1;
+                throw new ApiException(ExceptionEnum.WRONG_USERNAME_OR_PASSWORD);
             }
         }
         return user.getUserType();
@@ -37,7 +39,7 @@ public class UserServiceImpl implements UserService {
             user=User.builder().username(userName).password(password).email(email).userType(1).build();
             userMapper.insert(user);
         }else{
-                return -1;
+                throw new ApiException(ExceptionEnum.ALREADY_EXISTS);
         }
         return user.getUserId();
     }
@@ -46,7 +48,7 @@ public class UserServiceImpl implements UserService {
     public void update(Integer id,String object,String content){
         User user=userMapper.selectById(id);
         if(user==null){
-            return;
+            throw new ApiException(ExceptionEnum.RESOURCE_NOT_FOUND);
         }else{
             switch(object){
                 case "username":
@@ -80,7 +82,6 @@ public class UserServiceImpl implements UserService {
                     return;
             }
             userMapper.updateById(user);
-            return;
         }
     }
 
@@ -88,11 +89,10 @@ public class UserServiceImpl implements UserService {
     public void manage(Integer id, Integer userType){
         User user=userMapper.selectById(id);
         if(user==null){
-            return;
+            throw new ApiException(ExceptionEnum.RESOURCE_NOT_FOUND);
         }else{
             user.setUserType(userType);
         }
         userMapper.updateById(user);
-        return;
     }
 }
