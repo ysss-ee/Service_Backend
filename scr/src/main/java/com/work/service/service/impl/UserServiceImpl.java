@@ -11,6 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -60,38 +64,22 @@ public class UserServiceImpl implements UserService {
         if(user==null){
             throw new ApiException(ExceptionEnum.RESOURCE_NOT_FOUND);
         }else{
-            switch(object){
-                case "username":
-                    user.setUsername(content);
-                    break;
-                case "password":
-                    user.setPassword(content);
-                    break;
-                case "email":
-                    user.setEmail(content);
-                    break;
-                case "sex":
-                    user.setSex(content);
-                    break;
-                case "picture":
-                    user.setPicture(content);
-                    break;
-                case "college":
-                    user.setCollege(content);
-                    break;
-                case "major":
-                    user.setMajor(content);
-                    break;
-                case "grade":
-                    user.setGrade(content);
-                    break;
-                case "phone":
-                    user.setPhone(content);
-                    break;
-                default:
-                    return;
+            Map<String, BiConsumer<User,String>> updater =new HashMap<>();
+            updater.put("username", User::setUsername);
+            updater.put("password", User::setPassword);
+            updater.put("email", User::setEmail);
+            updater.put("sex", User::setSex);
+            updater.put("picture", User::setPicture);
+            updater.put("college", User::setCollege);
+            updater.put("major", User::setMajor);
+            updater.put("grade", User::setGrade);
+            updater.put("phone", User::setPhone);
+            if(updater.containsKey(object)){
+                updater.get(object).accept(user,content);
+                userMapper.updateById(user);
+            }else{
+                throw new ApiException(ExceptionEnum.RESOURCE_NOT_FOUND);
             }
-            userMapper.updateById(user);
         }
     }
 
