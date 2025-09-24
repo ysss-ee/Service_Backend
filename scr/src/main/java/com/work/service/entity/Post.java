@@ -27,4 +27,5 @@ public class Post {
     private Timestamp createTime;
     private Integer state;
     private Integer acceptUserId;
+    private String image;
 }
