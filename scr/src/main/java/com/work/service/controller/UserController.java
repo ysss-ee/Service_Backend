@@ -1,8 +1,13 @@
 package com.work.service.controller;
 
-import com.github.reaper6767.demoproject.dto.*;
-import com.github.reaper6767.demoproject.result.AjaxResult;
-import com.github.reaper6767.demoproject.service.UserService;
+import com.work.service.Result.AjaxResult;
+import com.work.service.dto.request.LoginRequest;
+import com.work.service.dto.request.ManageRequest;
+import com.work.service.dto.request.RegRequest;
+import com.work.service.dto.request.UpdateRequest;
+import com.work.service.dto.response.LoginResponse;
+import com.work.service.dto.response.RegResponse;
+import com.work.service.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

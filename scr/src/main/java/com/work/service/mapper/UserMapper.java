@@ -1,8 +1,7 @@
 package com.work.service.mapper;
 
-import com.github.reaper6767.demoproject.entity.User;
+import com.work.service.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author Reaper

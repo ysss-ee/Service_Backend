@@ -1,12 +1,19 @@
-package com.github.reaper6767.demoproject.service.impl;
+package com.work.service.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.work.service.constant.ExceptionEnum;
 import com.work.service.entity.User;
+import com.work.service.exception.ApiException;
 import com.work.service.mapper.UserMapper;
 import com.work.service.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +35,10 @@ public class UserServiceImpl implements UserService {
         userQueryWrapper.eq(User::getUsername, userName);
         User user=userMapper.selectOne(userQueryWrapper);
         if(user==null){
-           return 0;
+           throw new ApiException(ExceptionEnum.WRONG_USERNAME_OR_PASSWORD);
         }else{
             if(!user.getPassword().equals(password)) {
-                return -1;
+                throw new ApiException(ExceptionEnum.WRONG_USERNAME_OR_PASSWORD);
             }
         }
         return user.getUserType();
@@ -46,7 +53,7 @@ public class UserServiceImpl implements UserService {
             user=User.builder().username(userName).password(password).email(email).userType(1).build();
             userMapper.insert(user);
         }else{
-                return -1;
+                throw new ApiException(ExceptionEnum.ALREADY_EXISTS);
         }
         return user.getUserId();
     }
@@ -55,41 +62,24 @@ public class UserServiceImpl implements UserService {
     public void update(Integer id,String object,String content){
         User user=userMapper.selectById(id);
         if(user==null){
-            return;
+            throw new ApiException(ExceptionEnum.RESOURCE_NOT_FOUND);
         }else{
-            switch(object){
-                case "username":
-                    user.setUsername(content);
-                    break;
-                case "password":
-                    user.setPassword(content);
-                    break;
-                case "email":
-                    user.setEmail(content);
-                    break;
-                case "sex":
-                    user.setSex(content);
-                    break;
-                case "picture":
-                    user.setPicture(content);
-                    break;
-                case "college":
-                    user.setCollege(content);
-                    break;
-                case "major":
-                    user.setMajor(content);
-                    break;
-                case "grade":
-                    user.setGrade(content);
-                    break;
-                case "phone":
-                    user.setPhone(content);
-                    break;
-                default:
-                    return;
+            Map<String, BiConsumer<User,String>> updater =new HashMap<>();
+            updater.put("username", User::setUsername);
+            updater.put("password", User::setPassword);
+            updater.put("email", User::setEmail);
+            updater.put("sex", User::setSex);
+            updater.put("picture", User::setPicture);
+            updater.put("college", User::setCollege);
+            updater.put("major", User::setMajor);
+            updater.put("grade", User::setGrade);
+            updater.put("phone", User::setPhone);
+            if(updater.containsKey(object)){
+                updater.get(object).accept(user,content);
+                userMapper.updateById(user);
+            }else{
+                throw new ApiException(ExceptionEnum.RESOURCE_NOT_FOUND);
             }
-            userMapper.updateById(user);
-            return;
         }
     }
 
@@ -97,11 +87,10 @@ public class UserServiceImpl implements UserService {
     public void manage(Integer id, Integer userType){
         User user=userMapper.selectById(id);
         if(user==null){
-            return;
+            throw new ApiException(ExceptionEnum.RESOURCE_NOT_FOUND);
         }else{
             user.setUserType(userType);
         }
         userMapper.updateById(user);
-        return;
     }
 }
