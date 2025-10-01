@@ -3,8 +3,8 @@ package com.work.service.dto.request;
 import lombok.Data;
 
 @Data
-public class MarkRequest {
+public class ReviewRequest {
     //private Integer userId;
-    private Integer postId;
-    private String reason;
+    private Integer reportId;
+    private Integer approval;
 }

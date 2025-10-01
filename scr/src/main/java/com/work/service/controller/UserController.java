@@ -5,6 +5,7 @@ import com.work.service.dto.request.LoginRequest;
 import com.work.service.dto.request.ManageRequest;
 import com.work.service.dto.request.RegRequest;
 import com.work.service.dto.request.UpdateRequest;
+import com.work.service.dto.response.LoginResponse;
 import com.work.service.dto.response.RegResponse;
 import com.work.service.service.UserService;
 import com.work.service.util.CurrentUserId;
@@ -28,9 +29,9 @@ public class UserController {
         return AjaxResult.success(new RegResponse(userId));
     }
     @PostMapping("/login")
-    public AjaxResult<String> login(@Valid @RequestBody LoginRequest request){
-        String token =userService.login(request.getUsername(), request.getPassword());
-        return AjaxResult.success(token);
+    public AjaxResult<LoginResponse> login(@Valid @RequestBody LoginRequest request){
+        Integer type =userService.login(request.getUsername(), request.getPassword());
+        return AjaxResult.success(new LoginResponse(type));
     }
     @PatchMapping("/update")
     public AjaxResult<String> update(@Valid @RequestBody UpdateRequest request,@CurrentUserId Integer userId){
