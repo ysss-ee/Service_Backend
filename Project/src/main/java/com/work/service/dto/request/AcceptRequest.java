@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class AcceptRequest {
-    private Integer userId;
+   // private Integer userId;
     private Integer postId;
 }

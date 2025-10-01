@@ -7,8 +7,8 @@ import lombok.Data;
 @Data
 @Builder
 public class PublishRequest {
-    @JsonProperty("userId")
-    private Integer userId;
+    //@JsonProperty("userId")
+    //private Integer userId;
     private String title;
     private String content;
     private Integer level;
