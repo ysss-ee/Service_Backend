@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * &#064;TableName  post
@@ -22,10 +23,12 @@ public class Post {
     private String content;
     private Integer level;
     private Integer hide;
-    private String response;
+    private List<Response> response;
     private String comment;
     private Timestamp createTime;
     private Integer state;
     private Integer acceptUserId;
     private String image;
+
+
 }

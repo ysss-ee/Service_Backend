@@ -3,15 +3,20 @@ package com.work.service.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.work.service.constant.ExceptionEnum;
 import com.work.service.entity.Post;
+import com.work.service.entity.Response;
 import com.work.service.entity.User;
 import com.work.service.exception.ApiException;
 import com.work.service.mapper.PostMapper;
+import com.work.service.mapper.ResponseMapper;
 import com.work.service.mapper.UserMapper;
+import com.work.service.service.ImageUploadService;
 import com.work.service.service.PostService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +33,11 @@ public class PostServiceImpl implements PostService {
     private PostMapper postMapper;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private ResponseMapper responseMapper;
+    @Autowired
+    private ImageUploadService imageUploadService;
+
 
     /**
      * 检查帖子是否存在
@@ -56,18 +66,32 @@ public class PostServiceImpl implements PostService {
      */
     @Override
     public void publish(Integer userId, String title, String content, Integer level, Integer hide) {
-        Post post = Post.builder()
-                .userId(userId)
-                .title(title)
-                .content(content)
-                .level(level)
-                .hide(hide)
-                .build();
-        postMapper.insert(post);
+        try {
+            Post post = Post.builder()
+                    .userId(userId)
+                    .title(title)
+                    .content(content)
+                    .level(level)
+                    .hide(hide)
+                    .build();
+
+            postMapper.insert(post);
+//            Integer postId = post.getPostId();
+//
+//            if (file != null && !file.isEmpty()) {
+//                String fileName = imageUploadService.saveAvatar(file, "post", String.valueOf(postId));
+//                String imageUrl = imageUploadService.getUrl(postId, "post", fileName);
+//
+//                post.setImage(imageUrl);
+//                postMapper.updateById(post);
+//            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    /**
-     * 帖子上传图片
+    /*
+      帖子上传图片
      */
     @Override
     public void postImage(Integer postId, String imageUrl) {
@@ -92,12 +116,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void comment(Integer userId, Integer postId, String comment) {
         Post post = getPostIfExists(postId);
-        StringBuilder newComment = new StringBuilder();
-        if (post.getComment() != null && !post.getComment().isEmpty()) {
-            newComment.append(post.getComment()).append("\n");
-        }
-        newComment.append(userId).append(":").append(comment);
-        post.setComment(newComment.toString());
+        post.setComment( comment);
         postMapper.updateById(post);
     }
     /**
@@ -109,15 +128,17 @@ public class PostServiceImpl implements PostService {
         Integer type = userMapper.selectById(userId).getUserType();
         LambdaQueryWrapper<Post> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.ne(Post::getLevel, 0);
-        if(type == 2){
+        if(type == 2) {
             queryWrapper.ne(Post::getState, 2);
         }
         queryWrapper.orderByAsc(Post::getLevel);
         List<Post> posts = postMapper.selectList(queryWrapper);
         for (Post post : posts) {
-            if (post.getHide() == 1) {
-                post.setUserId(-1);
-            }
+            List<Response> response = responseMapper.selectList(
+                    new LambdaQueryWrapper<Response>().eq(Response::getPostId, post.getPostId())
+            );
+            post.setResponse(response);
+            if (post.getHide() == 1) post.setUserId(-1);
         }
         return posts;
     }
@@ -125,16 +146,13 @@ public class PostServiceImpl implements PostService {
      * 管理员回复帖子
      */
     @Override
-    public void response(Integer userId, Integer postId, String response) {
+    public void response(Integer userId, Integer postId, String content) {
         checkPermission(userId);
-        Post post = getPostIfExists(postId);
-        StringBuilder newResponse = new StringBuilder();
-        if (post.getResponse() != null && !post.getResponse().isEmpty()) {
-            newResponse.append(post.getResponse()).append("\n");
-        }
-        newResponse.append(userId).append(":").append(response);
-        post.setComment(newResponse.toString());
-        postMapper.updateById(post);
+        Response response = Response.builder()
+                .postId(postId)
+                .content(content)
+                .build();
+        responseMapper.insert(response);
     }
     /**
      * 接单
@@ -169,7 +187,7 @@ public class PostServiceImpl implements PostService {
     public void deleteAccept(Integer userId, Integer postId) {
         Post post = getPostIfExists(postId);
         post.setState(1);
-        post.setAcceptUserId(null);
+        post.setAcceptUserId(0);
         postMapper.updateById(post);
     }
 

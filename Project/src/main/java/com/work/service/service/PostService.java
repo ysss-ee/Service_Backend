@@ -1,6 +1,7 @@
 package com.work.service.service;
 import com.work.service.entity.Post;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

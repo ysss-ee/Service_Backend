@@ -1,12 +1,8 @@
 package com.work.service.service.impl;
 
-import com.work.service.mapper.UserMapper;
 import com.work.service.service.ImageUploadService;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
