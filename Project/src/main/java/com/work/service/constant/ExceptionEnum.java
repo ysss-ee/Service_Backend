@@ -13,8 +13,7 @@ public enum ExceptionEnum {
     PERMISSION_NOT_ALLOWED(200003, "权限不足"),
 
     NOT_FOUND_ERROR(200404, HttpStatus.NOT_FOUND.getReasonPhrase()),
-    SERVER_ERROR(200500, "系统错误, 请稍后重试"),
-    ;
+    SERVER_ERROR(200500, "系统错误, 请稍后重试");
 
     private final Integer errorCode;
     private final String errorMsg;
