@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class AcceptRequest {
-    private Integer userId;
+public class ResolveRequest {
+    private Integer acceptanceId;
     private Integer postId;
 }

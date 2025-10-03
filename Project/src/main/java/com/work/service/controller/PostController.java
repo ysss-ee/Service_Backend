@@ -1,7 +1,6 @@
 package com.work.service.controller;
 
 import com.work.service.Result.AjaxResult;
-import com.work.service.dto.request.AcceptRequest;
 import com.work.service.dto.request.CommentRequest;
 import com.work.service.dto.request.PublishRequest;
 import com.work.service.dto.request.ResponseRequest;
@@ -54,27 +53,4 @@ public class PostController {
         postService.response(userId, response.getPostId(), response.getContent());
         return AjaxResult.success();
     }
-
-    @PutMapping("/admin/acceptPost")
-    public AjaxResult<Void> acceptPost(@Valid @RequestBody AcceptRequest accept,@CurrentUserId Integer userId) {
-        postService.acceptPost(userId, accept.getPostId());
-        return AjaxResult.success();
-    }
-    @GetMapping("/admin/select")
-    public AjaxResult<List<Post>> getAcceptPosts(@CurrentUserId Integer userId) {
-        List<Post> posts = postService.getAcceptPosts(userId);
-        return AjaxResult.success(posts);
-    }
-
-    @PutMapping("/admin/delete_accept")
-    public AjaxResult<Void> deleteAccept(@Valid @RequestBody AcceptRequest accept,@CurrentUserId Integer userId) {
-        postService.deleteAccept(userId, accept.getPostId());
-        return AjaxResult.success();
-    }
-
-
-
-
-
-
 }

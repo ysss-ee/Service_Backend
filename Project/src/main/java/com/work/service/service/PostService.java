@@ -18,7 +18,7 @@ public interface PostService {
     void comment(Integer userId, Integer postId, String comment);
     List<Post> getPosts(Integer userId);
     void response(Integer userId, Integer postId, String response);
-    void acceptPost(Integer userId, Integer postId);
-    List<Post> getAcceptPosts(Integer userId);
-    void deleteAccept(Integer userId, Integer postId);
+//    void acceptPost(Integer userId, Integer postId);
+//    List<Post> getAcceptPosts(Integer userId);
+//    void deleteAccept(Integer userId, Integer postId);
 }

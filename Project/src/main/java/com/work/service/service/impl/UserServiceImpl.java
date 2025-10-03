@@ -2,6 +2,8 @@ package com.work.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.work.service.constant.ExceptionEnum;
+import com.work.service.dto.response.LogResponse;
+import com.work.service.dto.response.RegResponse;
 import com.work.service.entity.User;
 import com.work.service.exception.ApiException;
 import com.work.service.mapper.UserMapper;
@@ -33,7 +35,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(String userName, String password) {
+    public LogResponse login(String userName, String password) {
         LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
         userQueryWrapper.eq(User::getUsername, userName);
         User user=userMapper.selectOne(userQueryWrapper);
@@ -44,7 +46,8 @@ public class UserServiceImpl implements UserService {
                 throw new ApiException(ExceptionEnum.WRONG_USERNAME_OR_PASSWORD);
             }
         }
-        return jwtUtil.generateToken(Long.valueOf(user.getUserId()));
+        String token = jwtUtil.generateToken(Long.valueOf(user.getUserId()));
+        return new LogResponse(user.getUserType(), token);
     }
 
     @Override

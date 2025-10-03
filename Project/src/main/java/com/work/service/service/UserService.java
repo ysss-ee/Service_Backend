@@ -1,4 +1,6 @@
 package com.work.service.service;
+import com.work.service.dto.response.LogResponse;
+import com.work.service.dto.response.RegResponse;
 import org.springframework.stereotype.Service;
 
 /**
@@ -8,7 +10,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface UserService {
-    String login(String username, String password);
+    LogResponse login(String username, String password);
     Integer reg(String username, String password, String email);
     void update(Integer id, String object, String content);
     void manage(Integer id, Integer userType);

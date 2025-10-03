@@ -9,14 +9,11 @@ import com.work.service.exception.ApiException;
 import com.work.service.mapper.PostMapper;
 import com.work.service.mapper.ResponseMapper;
 import com.work.service.mapper.UserMapper;
-import com.work.service.service.ImageUploadService;
 import com.work.service.service.PostService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,8 +32,6 @@ public class PostServiceImpl implements PostService {
     private UserMapper userMapper;
     @Resource
     private ResponseMapper responseMapper;
-    @Autowired
-    private ImageUploadService imageUploadService;
 
 
     /**
@@ -66,31 +61,17 @@ public class PostServiceImpl implements PostService {
      */
     @Override
     public void publish(Integer userId, String title, String content, Integer level, Integer hide) {
-        try {
-            Post post = Post.builder()
-                    .userId(userId)
-                    .title(title)
-                    .content(content)
-                    .level(level)
-                    .hide(hide)
-                    .build();
-
-            postMapper.insert(post);
-//            Integer postId = post.getPostId();
-//
-//            if (file != null && !file.isEmpty()) {
-//                String fileName = imageUploadService.saveAvatar(file, "post", String.valueOf(postId));
-//                String imageUrl = imageUploadService.getUrl(postId, "post", fileName);
-//
-//                post.setImage(imageUrl);
-//                postMapper.updateById(post);
-//            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Post post = Post.builder()
+                .userId(userId)
+                .title(title)
+                .content(content)
+                .level(level)
+                .hide(hide)
+                .build();
+        postMapper.insert(post);
     }
 
-    /*
+    /**
       帖子上传图片
      */
     @Override
@@ -153,42 +134,6 @@ public class PostServiceImpl implements PostService {
                 .content(content)
                 .build();
         responseMapper.insert(response);
-    }
-    /**
-     * 接单
-     */
-    @Override
-    public void acceptPost(Integer userId, Integer postId) {
-        checkPermission(userId);
-        Post post = getPostIfExists(postId);
-        post.setState(2);
-        post.setAcceptUserId(userId);
-        postMapper.updateById(post);
-
-    }
-    /**
-     * 获取接单的帖子
-     */
-    @Override
-    public List<Post> getAcceptPosts(Integer userId) {
-        checkPermission(userId);
-        List<Post> posts = postMapper.selectList(new LambdaQueryWrapper<Post>().eq(Post::getAcceptUserId, userId));
-        for (Post post : posts) {
-            if (post.getHide() == 1) {
-                post.setUserId(-1);
-            }
-        }
-        return posts;
-    }
-    /**
-     * 取消接单
-     */
-    @Override
-    public void deleteAccept(Integer userId, Integer postId) {
-        Post post = getPostIfExists(postId);
-        post.setState(1);
-        post.setAcceptUserId(0);
-        postMapper.updateById(post);
     }
 
 }

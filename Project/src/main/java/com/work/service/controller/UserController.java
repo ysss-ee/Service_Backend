@@ -5,6 +5,7 @@ import com.work.service.dto.request.LoginRequest;
 import com.work.service.dto.request.ManageRequest;
 import com.work.service.dto.request.RegRequest;
 import com.work.service.dto.request.UpdateRequest;
+import com.work.service.dto.response.LogResponse;
 import com.work.service.dto.response.RegResponse;
 import com.work.service.service.UserService;
 import com.work.service.util.CurrentUserId;
@@ -28,18 +29,18 @@ public class UserController {
         return AjaxResult.success(new RegResponse(userId));
     }
     @PostMapping("/login")
-    public AjaxResult<String> login(@Valid @RequestBody LoginRequest request){
-        String token =userService.login(request.getUsername(), request.getPassword());
-        return AjaxResult.success(token);
+    public AjaxResult<LogResponse> login(@Valid @RequestBody LoginRequest request){
+        LogResponse logResponse =userService.login(request.getUsername(), request.getPassword());
+        return AjaxResult.success(logResponse);
     }
-    @PatchMapping("/update")
+    @PutMapping("/update")
     public AjaxResult<String> update(@Valid @RequestBody UpdateRequest request,@CurrentUserId Integer userId){
         userService.update(userId,request.getObject(),request.getContent());
         return AjaxResult.success("更新个人信息成功");
     }
     @PutMapping("/manage")
-    public AjaxResult<String> manage(@Valid @RequestBody ManageRequest request,@CurrentUserId Integer userId){
-        userService.manage(userId, request.getUserType());
+    public AjaxResult<String> manage(@Valid @RequestBody ManageRequest request){
+        userService.manage(request.getUserId(), request.getUserType());
         return AjaxResult.success("管理账号类型成功");
     }
 }

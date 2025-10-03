@@ -10,6 +10,7 @@ import com.work.service.mapper.PostMapper;
 import com.work.service.mapper.ReportMapper;
 import com.work.service.mapper.UserMapper;
 import com.work.service.service.ReportService;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,8 @@ public class ReportServiceImpl implements ReportService {
     private final ReportMapper reportMapper;
     private final PostMapper postMapper;
     private final UserMapper userMapper;
+    @Resource
+    private MessageServiceImpl messageService;
 
     private void checkUserType3(Integer userId) {
         User user = userMapper.selectById(userId);
@@ -80,5 +83,7 @@ public class ReportServiceImpl implements ReportService {
         Post post=postMapper.selectById(postId);
         post.setLevel(0);
         postMapper.updateById(post);
+        Integer acceptUserId=post.getAcceptUserId();
+        messageService.reportMessage(acceptUserId,postId);
     }
 }
