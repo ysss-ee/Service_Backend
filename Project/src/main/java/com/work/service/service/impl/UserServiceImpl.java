@@ -2,8 +2,8 @@ package com.work.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.work.service.constant.ExceptionEnum;
+import com.work.service.dto.response.InformationResponse;
 import com.work.service.dto.response.LogResponse;
-import com.work.service.dto.response.RegResponse;
 import com.work.service.entity.User;
 import com.work.service.exception.ApiException;
 import com.work.service.mapper.UserMapper;
@@ -90,13 +90,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void manage(Integer id, Integer userType){
+    public InformationResponse Information(Integer id){
         User user=userMapper.selectById(id);
-        if(user==null){
-            throw new ApiException(ExceptionEnum.RESOURCE_NOT_FOUND);
-        }else{
-            user.setUserType(userType);
-        }
-        userMapper.updateById(user);
+        return InformationResponse.builder().userId(user.getUserId()).username(user.getUsername()).userType(user.getUserType()).sex(user.getSex()).email(user.getEmail()).college(user.getCollege()).major(user.getMajor()).grade(user.getGrade()).phone(user.getPhone()).build();
     }
 }
