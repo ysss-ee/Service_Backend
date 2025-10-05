@@ -11,6 +11,8 @@ import com.work.service.mapper.PostMapper;
 import com.work.service.mapper.UserMapper;
 import com.work.service.service.AcceptanceService;
 import jakarta.annotation.Resource;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,6 +59,7 @@ public class AcceptanceServiceImpl implements AcceptanceService {
      * 发送消息
      */
     @Override
+    @CacheEvict(value = "acceptPosts", key = "#userId")
     public void acceptPost(Integer userId, Integer postId) {
         String adminName =checkPermission(userId);
 
@@ -78,6 +81,7 @@ public class AcceptanceServiceImpl implements AcceptanceService {
      * 获取接单的帖子
      */
     @Override
+    @Cacheable(value = "acceptPosts", key = "#userId")
     public List<Post> getAcceptPosts(Integer userId) {
         List<Post> posts = postMapper.selectList(new LambdaQueryWrapper<Post>().eq(Post::getAcceptUserId, userId));
         for (Post post : posts) {
@@ -94,14 +98,14 @@ public class AcceptanceServiceImpl implements AcceptanceService {
      * 发送消息
      */
     @Override
-    public void deleteAccept(Integer acceptanceId, Integer postId) {
+    @CacheEvict(value = "acceptPosts", key = "#userId")
+    public void deleteAccept(Integer userId,Integer acceptanceId) {
+        Acceptance acceptance  = acceptanceMapper.selectById(acceptanceId);
+        Integer postId = acceptance.getPostId();
         Post post = getPostIfExists(postId);
         post.setState(1);
         post.setAcceptUserId(0);
         postMapper.updateById(post);
-
-
-        Acceptance acceptance = acceptanceMapper.selectById(acceptanceId);
         acceptance.setState(3);
         acceptance.setDeleteTime(new java.sql.Date(System.currentTimeMillis()));
         acceptanceMapper.updateById(acceptance);
@@ -115,6 +119,7 @@ public class AcceptanceServiceImpl implements AcceptanceService {
      * 发送消息
      */
     @Override
+    @CacheEvict(value = "acceptPosts", key = "#userId")
     public void resolvePost(Integer userId,Integer acceptanceId) {
         Acceptance acceptance = acceptanceMapper.selectById(acceptanceId);
         Integer postId = acceptance.getPostId();

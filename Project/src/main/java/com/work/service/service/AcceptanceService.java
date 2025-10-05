@@ -9,7 +9,7 @@ import java.util.List;
 public interface AcceptanceService {
     void acceptPost(Integer userId, Integer postId);
     List<Post> getAcceptPosts(Integer userId);
-    void deleteAccept(Integer userId, Integer postId);
+    void deleteAccept(Integer userId,Integer acceptanceId);
     void resolvePost(Integer userId,Integer acceptanceId);
 
 }

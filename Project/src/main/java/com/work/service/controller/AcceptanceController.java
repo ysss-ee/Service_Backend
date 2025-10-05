@@ -1,8 +1,6 @@
 package com.work.service.controller;
 
 import com.work.service.Result.AjaxResult;
-import com.work.service.dto.request.AcceptRequest;
-import com.work.service.dto.request.ResolveRequest;
 import com.work.service.entity.Post;
 import com.work.service.service.AcceptanceService;
 import com.work.service.util.CurrentUserId;
@@ -22,8 +20,8 @@ public class AcceptanceController {
 
 
     @PutMapping("/admin/acceptPost")
-    public AjaxResult<Void> acceptPost(@Valid @RequestBody AcceptRequest accept, @CurrentUserId Integer userId) {
-        acceptanceService.acceptPost(userId, accept.getPostId());
+    public AjaxResult<Void> acceptPost(@Valid @RequestParam Integer acceptanceId, @CurrentUserId Integer userId) {
+        acceptanceService.acceptPost(userId, acceptanceId);
         return AjaxResult.success();
     }
     @GetMapping("/admin/select")
@@ -33,8 +31,8 @@ public class AcceptanceController {
     }
 
     @PutMapping("/admin/delete_accept")
-    public AjaxResult<Void> deleteAccept(@Valid @RequestBody AcceptRequest accept,@CurrentUserId Integer userId) {
-        acceptanceService.deleteAccept(userId, accept.getPostId());
+    public AjaxResult<Void> deleteAccept(@Valid @RequestParam Integer acceptanceId,@CurrentUserId Integer userId) {
+        acceptanceService.deleteAccept(userId, acceptanceId);
         return AjaxResult.success();
     }
     @PutMapping("/admin/resolve")

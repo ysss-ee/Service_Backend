@@ -12,6 +12,8 @@ import com.work.service.mapper.UserMapper;
 import com.work.service.service.ReportService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +27,7 @@ public class ReportServiceImpl implements ReportService {
     private final UserMapper userMapper;
     @Resource
     private MessageServiceImpl messageService;
+
 
     private void checkUserType3(Integer userId) {
         User user = userMapper.selectById(userId);
@@ -43,6 +46,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @CacheEvict(value = "report", allEntries = true)
     public void markReport(Integer userId, Integer postId, String reason){
         checkUserType(userId);
         LambdaQueryWrapper<Report> reportQueryWrapper = new LambdaQueryWrapper<>();
@@ -56,6 +60,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Cacheable(value = "report", key = "all")
     public List<Report> getAllReports(Integer userId){
         checkUserType3(userId);
         LambdaQueryWrapper<Report> reportQueryWrapper = new LambdaQueryWrapper<>();
@@ -64,6 +69,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @CacheEvict(value = "report", allEntries = true)
     public void reviewReport(Integer userId, Integer reportId, Integer approval){
         checkUserType3(userId);
         Report report=reportMapper.selectById(reportId);

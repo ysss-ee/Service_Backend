@@ -24,7 +24,7 @@ public class PostController {
     @PostMapping(value="/student/post")
 
     public AjaxResult<Void> publishPost(@Valid @RequestBody PublishRequest post
-                                        , @CurrentUserId Integer userId) {
+                                        , @RequestAttribute("userId")Integer userId) {
         postService.publish( userId, post.getTitle(), post.getContent(), post.getLevel(), post.getHide());
         return AjaxResult.success();
     }

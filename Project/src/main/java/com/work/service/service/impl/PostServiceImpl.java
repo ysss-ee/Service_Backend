@@ -13,6 +13,8 @@ import com.work.service.service.PostService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +34,7 @@ public class PostServiceImpl implements PostService {
     private UserMapper userMapper;
     @Resource
     private ResponseMapper responseMapper;
+    private static final String postCache = "post";
 
 
     /**
@@ -60,6 +63,7 @@ public class PostServiceImpl implements PostService {
      * 发布帖子
      */
     @Override
+    @CacheEvict(value = postCache, allEntries = true)
     public void publish(Integer userId, String title, String content, Integer level, Integer hide) {
         Post post = Post.builder()
                 .userId(userId)
@@ -75,6 +79,7 @@ public class PostServiceImpl implements PostService {
       帖子上传图片
      */
     @Override
+    @CacheEvict(value = postCache, allEntries = true)
     public void postImage(Integer postId, String imageUrl) {
         Post post = postMapper.selectById(postId);
         post.setImage(imageUrl);
@@ -84,6 +89,7 @@ public class PostServiceImpl implements PostService {
      * 查看自己帖子
      */
     @Override
+    @Cacheable(value = postCache, key = "#userId")
     public List<Post> check(Integer userId) {
         List<Post> posts = postMapper.selectList(new LambdaQueryWrapper<Post>().eq(Post::getUserId, userId));
         if (posts.isEmpty()) {
@@ -95,6 +101,7 @@ public class PostServiceImpl implements PostService {
      * 评论帖子
      */
     @Override
+    @CacheEvict(value = postCache, allEntries = true)
     public void comment(Integer userId, Integer postId, String comment) {
         Post post = getPostIfExists(postId);
         post.setComment( comment);
@@ -104,15 +111,13 @@ public class PostServiceImpl implements PostService {
      * 获取帖子
      */
     @Override
+    @Cacheable(value = postCache, key = "all")
     public List<Post> getPosts(Integer userId) {
         checkPermission(userId);
         Integer type = userMapper.selectById(userId).getUserType();
         LambdaQueryWrapper<Post> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.ne(Post::getLevel, 0);
-        if(type == 2) {
-            queryWrapper.ne(Post::getState, 2);
-        }
-        queryWrapper.orderByAsc(Post::getLevel);
+        queryWrapper.orderByAsc(Post::getState).orderByDesc(Post::getLevel);
         List<Post> posts = postMapper.selectList(queryWrapper);
         for (Post post : posts) {
             List<Response> response = responseMapper.selectList(
@@ -127,6 +132,7 @@ public class PostServiceImpl implements PostService {
      * 管理员回复帖子
      */
     @Override
+    @CacheEvict(value = postCache, allEntries = true)
     public void response(Integer userId, Integer postId, String content) {
         checkPermission(userId);
         Response response = Response.builder()

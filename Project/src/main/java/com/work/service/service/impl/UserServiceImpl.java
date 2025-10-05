@@ -9,9 +9,12 @@ import com.work.service.exception.ApiException;
 import com.work.service.mapper.UserMapper;
 import com.work.service.service.UserService;
 import com.work.service.util.JwtUtil;
+import com.work.service.util.RedisUtil;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -27,7 +30,10 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Resource
     private JwtUtil jwtUtil;
+    private static final String userCache = "user";
+
     @Override
+    @CacheEvict(value = userCache, key = "#userId")
     public void postAvatar(Integer userId, String avatarUrl) {
         User user = userMapper.selectById(userId);
         user.setPicture(avatarUrl);
@@ -40,7 +46,7 @@ public class UserServiceImpl implements UserService {
         userQueryWrapper.eq(User::getUsername, userName);
         User user=userMapper.selectOne(userQueryWrapper);
         if(user==null){
-           throw new ApiException(ExceptionEnum.WRONG_USERNAME_OR_PASSWORD);
+           throw new ApiException(ExceptionEnum.NOT_FOUND_ERROR);
         }else {
             if (!user.getPassword().equals(password)) {
                 throw new ApiException(ExceptionEnum.WRONG_USERNAME_OR_PASSWORD);
@@ -65,6 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = userCache, key = "#id")
     public void update(Integer id,String object,String content){
         User user=userMapper.selectById(id);
         if(user==null){
@@ -90,6 +97,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = userCache, key = "#id")
     public InformationResponse Information(Integer id){
         User user=userMapper.selectById(id);
         return InformationResponse.builder().userId(user.getUserId()).username(user.getUsername()).userType(user.getUserType()).sex(user.getSex()).email(user.getEmail()).college(user.getCollege()).major(user.getMajor()).grade(user.getGrade()).phone(user.getPhone()).build();

@@ -2,7 +2,6 @@ package com.work.service.controller;
 
 import com.work.service.Result.AjaxResult;
 import com.work.service.dto.request.ReviewRequest;
-import com.work.service.dto.request.DeletePostRequest;
 import com.work.service.dto.request.MarkRequest;
 import com.work.service.entity.Report;
 import com.work.service.service.ReportService;
@@ -40,8 +39,8 @@ public class ReportController {
     }
 
     @DeleteMapping("/delete")
-    public AjaxResult<String> deletePost(@Valid @RequestBody DeletePostRequest request,@CurrentUserId Integer userId){
-        reportService.deletePost(userId,request.getPostId());
+    public AjaxResult<String> deletePost(@Valid @RequestParam Integer postId,@CurrentUserId Integer userId){
+        reportService.deletePost(userId,postId);
         return AjaxResult.success("删除成功");
     }
 }
