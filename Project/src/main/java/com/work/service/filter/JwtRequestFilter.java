@@ -24,17 +24,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         final String authorizationHeader = request.getHeader("Authorization");
-        Long userId = null;
+
+        String userId = null;
         String jwt = null;
-        logger.info("Request URL: " + request.getRequestURL());
-        logger.info("Authorization Header: " + authorizationHeader);
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);//提取授权头中的JWT令牌，去掉前七个字符
+            jwt = authorizationHeader.substring(7);
             try {
-                userId = jwtUtil.getUserIdFromToken(jwt);//从JWT令牌中获取用户名
-                logger.info("Extracted userId: " + userId);
+                userId = jwtUtil.extractUserId(jwt);
             } catch (Exception e) {
+                // JWT解析异常处理
                 logger.warn("Unable to parse JWT token: " + e.getMessage());
             }
         }
@@ -42,17 +41,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             // 验证令牌
             if (jwtUtil.validateToken(jwt, userId)) {
-                //创建一个UsernamePasswordAuthenticationToken对象，并设置用户名和权限
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                logger.info("Authentication set for userId: " + userId);
-            } else {
-                logger.warn("Token validation failed for userId: " + userId);
             }
         }
         filterChain.doFilter(request, response);
     }
-
 }
+
+

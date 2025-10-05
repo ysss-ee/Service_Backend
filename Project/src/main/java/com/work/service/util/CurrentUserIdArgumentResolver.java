@@ -30,6 +30,7 @@ public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResol
                                  WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = request.getHeader("Authorization").substring(7);
-        return jwtUtil.getUserIdFromToken(token);
+        Integer userId = Integer.valueOf(jwtUtil.extractUserId(token));
+        return userId;
     }
 }

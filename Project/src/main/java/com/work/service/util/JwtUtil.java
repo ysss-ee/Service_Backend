@@ -19,34 +19,22 @@ public class JwtUtil {
     private Long expiration;
 
     // 生成token
-    public String generateToken(Long userId) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId);
+    public String generateToken(String  userId) {
+
         return Jwts.builder()
-                .subject(userId.toString())  // 设置主题（用户名）
-                .issuedAt(new Date()) // 设置签发时间
-                .expiration(new Date(System.currentTimeMillis() + expiration)) // 设置过期时间
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256)// 使用密钥签名
+                .setSubject(userId)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
 
     }
 
-    // 从token中获取用户ID
-    public Long getUserIdFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.get("userId", Long.class);
-    }
-
-    // 验证token是否正确
-    public boolean validateToken(String token, Long userId) {
-        try{
-            Long id = getUserIdFromToken(token);
-            return !id.equals (userId) &&!isTokenExpired(token);
-        }catch(Exception  e){
+    public boolean validateToken(String token, String userId) {
+        try {
+            String extractedUserId = extractUserId(token);
+            return (extractedUserId.equals(userId) && !isTokenExpired(token));
+        } catch (Exception e) {
             return false;
         }
     }
@@ -68,6 +56,20 @@ public class JwtUtil {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+    public String extractUserId(String token) {
+        try {
+            return Jwts.parser()
+                    .setSigningKey(secret)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new RuntimeException("JWT token has expired", e);
+        } catch (JwtException e) {
+            throw new RuntimeException("JWT token is invalid", e);
         }
     }
 

@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
                 throw new ApiException(ExceptionEnum.WRONG_USERNAME_OR_PASSWORD);
             }
         }
-        String token = jwtUtil.generateToken(Long.valueOf(user.getUserId()));
+        String token = jwtUtil.generateToken(String.valueOf(user.getUserId()));
         return new LogResponse(user.getUserType(), token);
     }
 
