@@ -61,13 +61,13 @@ public class UserServiceImpl implements UserService {
         LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
         userQueryWrapper.eq(User::getUsername, userName);
         User user=userMapper.selectOne(userQueryWrapper);
-        if(user==null){
+        if(user==null && userName.matches("\\w{2,20}") && (password.matches("[a-zA-Z0-9]{8,20}")) && email.matches("\\w+@\\w+\\.com")){
             user=User.builder().username(userName).password(password).email(email).userType(1).build();
             userMapper.insert(user);
+            return user.getUserId();
         }else{
                 throw new ApiException(ExceptionEnum.WRONG_USERNAME_OR_PASSWORD);
         }
-        return user.getUserId();
     }
 
     @Override
