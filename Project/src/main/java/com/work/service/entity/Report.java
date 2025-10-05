@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Report {
-    @TableId(value = "reportId",type = IdType.AUTO )
+    @TableId(value = "report_id",type = IdType.AUTO )
     private Integer reportId;
 
     private Integer postId;

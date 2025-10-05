@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface UserService {
-    LogResponse login(String username, String password);
+    LogResponse login(Integer userId, String password);
     Integer reg(String username, String password, String email);
     void update(Integer id, String object, String content);
     void postAvatar(Integer userId, String avatarUrl);

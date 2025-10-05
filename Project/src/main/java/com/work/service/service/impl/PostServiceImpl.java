@@ -65,8 +65,10 @@ public class PostServiceImpl implements PostService {
     @Override
     @CacheEvict(value = postCache, allEntries = true)
     public void publish(Integer userId, String title, String content, Integer level, Integer hide) {
+        User user = userMapper.selectById(userId);
         Post post = Post.builder()
                 .userId(userId)
+                .username(user.getUsername())
                 .title(title)
                 .content(content)
                 .level(level)
@@ -111,10 +113,9 @@ public class PostServiceImpl implements PostService {
      * 获取帖子
      */
     @Override
-    @Cacheable(value = postCache, key = "all")
+    @Cacheable(value = postCache, key = "'all'")
     public List<Post> getPosts(Integer userId) {
         checkPermission(userId);
-        Integer type = userMapper.selectById(userId).getUserType();
         LambdaQueryWrapper<Post> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.ne(Post::getLevel, 0);
         queryWrapper.orderByAsc(Post::getState).orderByDesc(Post::getLevel);
@@ -124,7 +125,10 @@ public class PostServiceImpl implements PostService {
                     new LambdaQueryWrapper<Response>().eq(Response::getPostId, post.getPostId())
             );
             post.setResponse(response);
-            if (post.getHide() == 1) post.setUserId(-1);
+            if (post.getHide() == 1){
+                post.setUserId(-1);
+                post.setUsername("匿名用户");
+            }
         }
         return posts;
     }

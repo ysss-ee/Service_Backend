@@ -17,9 +17,10 @@ import java.util.List;
 @Data
 @Builder
 public class Post {
-    @TableId(value = "postId", type = IdType.AUTO)
+    @TableId(value = "post_id", type = IdType.AUTO)
     private Integer postId;
     private Integer userId;
+    private String username;
     private String title;
     private String content;
     private Integer level;

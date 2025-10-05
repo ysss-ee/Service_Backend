@@ -41,10 +41,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public LogResponse login(String userName, String password) {
-        LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
-        userQueryWrapper.eq(User::getUsername, userName);
-        User user=userMapper.selectOne(userQueryWrapper);
+    public LogResponse login(Integer userId, String password) {
+        User user = userMapper.selectById(userId);
         if(user==null){
            throw new ApiException(ExceptionEnum.NOT_FOUND_ERROR);
         }else {
@@ -52,22 +50,20 @@ public class UserServiceImpl implements UserService {
                 throw new ApiException(ExceptionEnum.WRONG_USERNAME_OR_PASSWORD);
             }
         }
-        String token = jwtUtil.generateToken(String.valueOf(user.getUserId()));
+        String token = jwtUtil.generateToken(String.valueOf(userId));
         return new LogResponse(user.getUserType(), token);
     }
 
     @Override
-    public Integer reg(String userName, String password,String email) {
-        LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
-        userQueryWrapper.eq(User::getUsername, userName);
-        User user=userMapper.selectOne(userQueryWrapper);
-        if(user==null && userName.matches("\\w{2,20}") && (password.matches("[a-zA-Z0-9]{8,20}")) && email.matches("\\w+@\\w+\\.com")){
-            user=User.builder().username(userName).password(password).email(email).userType(1).build();
-            userMapper.insert(user);
-            return user.getUserId();
-        }else{
-                throw new ApiException(ExceptionEnum.WRONG_USERNAME_OR_PASSWORD);
-        }
+    public Integer reg(String username, String password,String email) {
+        User user = User.builder()
+                .username(username)
+                .password(password)
+                .email(email)
+                .userType(1)
+                .build();
+        userMapper.insert(user);
+        return user.getUserId();
     }
 
     @Override

@@ -26,7 +26,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/user/register").permitAll() // 注册接口
+                    .requestMatchers("/api/user/reg").permitAll() // 注册接口
                     .requestMatchers("/api/user/login").permitAll() // 登录接口
                     .anyRequest().authenticated()
                 )

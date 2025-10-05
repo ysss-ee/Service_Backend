@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class User {
-    @TableId(value = "userId" ,type = IdType.AUTO )
+    @TableId(value = "user_id" ,type = IdType.AUTO )
     private Integer userId;
 
     private String username;

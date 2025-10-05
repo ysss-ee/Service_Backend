@@ -20,8 +20,8 @@ public class AcceptanceController {
 
 
     @PutMapping("/admin/acceptPost")
-    public AjaxResult<Void> acceptPost(@Valid @RequestParam Integer acceptanceId, @CurrentUserId Integer userId) {
-        acceptanceService.acceptPost(userId, acceptanceId);
+    public AjaxResult<Void> acceptPost(@Valid @RequestParam Integer postId, @CurrentUserId Integer userId) {
+        acceptanceService.acceptPost(userId, postId);
         return AjaxResult.success();
     }
     @GetMapping("/admin/select")

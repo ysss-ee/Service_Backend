@@ -43,7 +43,7 @@ public class PostController {
     }
 
     @GetMapping("/admin/getAllPosts")
-    public AjaxResult<List<Post>> getPosts(@RequestParam Integer userId) {
+    public AjaxResult<List<Post>> getPosts(@CurrentUserId Integer userId) {
         List<Post> posts =postService.getPosts(userId);
         return AjaxResult.success(posts);
     }

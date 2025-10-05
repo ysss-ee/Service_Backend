@@ -30,7 +30,7 @@ public class UserController {
     }
     @PostMapping("/login")
     public AjaxResult<LogResponse> login(@Valid @RequestBody LoginRequest request){
-        LogResponse logResponse =userService.login(request.getUsername(), request.getPassword());
+        LogResponse logResponse =userService.login(request.getUserId(), request.getPassword());
         return AjaxResult.success(logResponse);
     }
     @PutMapping("/update")
