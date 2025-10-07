@@ -1,15 +1,16 @@
 package com.work.service.service.impl;
 
 import com.work.service.service.ImageUploadService;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
@@ -18,20 +19,19 @@ import java.util.Arrays;
 @Slf4j
 public class ImageUploadServiceImpl implements ImageUploadService {
 
-    @Value("${file.upload.dir}")
-    private String uploadDir;
-
     private static final String[] ALLOWED_CONTENT_TYPES = {
             "image/jpeg", "image/png", "image/gif", "image/jpg"
     };
+    @Value("${file.upload.dir}")
+    private String uploadDir;
 
     /**
      * 总逻辑
      */
     @Override
-    public  String saveAvatar(MultipartFile file,String type,String userId) throws IOException {
+    public String saveAvatar(MultipartFile file, String type, String userId) throws IOException {
         validateFile(file);
-        Path userDir = Paths.get(uploadDir,type, userId);
+        Path userDir = Paths.get(uploadDir, type, userId);
         //创建用户目录（如果不存在）
         if (!Files.exists(userDir)) {
             Files.createDirectories(userDir);
@@ -39,17 +39,19 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 
         //使用固定文件名，新文件自动覆盖旧文件
         String fileExtension = getFileExtension(file.getOriginalFilename());
-        String uniqueFileName = type+ "." + fileExtension;
+        String uniqueFileName = type + "." + fileExtension;
 
 
         Path filePath = userDir.resolve(uniqueFileName);
         processAndSaveImage(file, filePath);
+        file.transferTo(filePath);
         return uniqueFileName;
     }
+
     /**
      * 验证文件
      */
-    private void validateFile(MultipartFile file){
+    private void validateFile(MultipartFile file) {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("请选择要上传的文件");
         }
@@ -92,7 +94,6 @@ public class ImageUploadServiceImpl implements ImageUploadService {
     }
 
 
-
     /**
      * 获取文件扩展名
      */
@@ -122,7 +123,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
      * 获取头像的URL路径
      */
     @Override
-    public String getUrl(Integer id,String type, String fileName) {
-        return "/"+type+"/" + id + "/" + fileName;
+    public String getUrl(Integer id, String type, String fileName) {
+        return "/" + type + "/" + id + "/" + fileName;
     }
 }

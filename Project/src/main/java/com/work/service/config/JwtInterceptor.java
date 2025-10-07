@@ -1,6 +1,5 @@
 package com.work.service.config;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.work.service.entity.User;
 import com.work.service.mapper.UserMapper;
 import com.work.service.util.JwtUtil;

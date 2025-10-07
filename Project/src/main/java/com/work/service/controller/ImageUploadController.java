@@ -27,7 +27,8 @@ public class ImageUploadController {
 
     /**
      * 上传头像
-     * @param file 头像文件
+     *
+     * @param file   头像文件
      * @param userId 用户ID
      * @return 头像URL
      */
@@ -36,9 +37,9 @@ public class ImageUploadController {
                                    @RequestParam("userId") Integer userId) {
         try {
             // 保存头像文件
-            String fileName = imageUploadService.saveAvatar(file,"avatar", String.valueOf(userId));
+            String fileName = imageUploadService.saveAvatar(file, "avatar", String.valueOf(userId));
             // 获取头像URL
-            String avatarUrl = imageUploadService.getUrl(userId,"avatar", fileName);
+            String avatarUrl = imageUploadService.getUrl(userId, "avatar", fileName);
 
             userService.postAvatar(userId, avatarUrl);
             return AjaxResult.success(avatarUrl);
@@ -48,9 +49,11 @@ public class ImageUploadController {
             return AjaxResult.error(500, "上传失败: " + e.getMessage());
         }
     }
+
     /**
      * 上传帖子图片
-     * @param file 图片文件
+     *
+     * @param file   图片文件
      * @param postId 帖子ID
      * @return 图片URL
      */
@@ -59,9 +62,9 @@ public class ImageUploadController {
                                   @RequestParam("postId") Integer postId) {
         try {
             // 保存头像文件
-            String fileName = imageUploadService.saveAvatar(file,"post", String.valueOf(postId));
+            String fileName = imageUploadService.saveAvatar(file, "post", String.valueOf(postId));
             // 获取头像URL
-            String imageUrl = imageUploadService.getUrl(postId,"post", fileName);
+            String imageUrl = imageUploadService.getUrl(postId, "post", fileName);
             postService.postImage(postId, imageUrl);
             return AjaxResult.success(imageUrl);
         } catch (IllegalArgumentException e) {

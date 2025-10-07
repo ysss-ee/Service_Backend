@@ -28,14 +28,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class PostServiceImpl implements PostService {
+    private static final String postCache = "post";
     @Resource
     private PostMapper postMapper;
     @Resource
     private UserMapper userMapper;
     @Resource
     private ResponseMapper responseMapper;
-    private static final String postCache = "post";
-
 
     /**
      * 检查帖子是否存在
@@ -54,7 +53,7 @@ public class PostServiceImpl implements PostService {
     private void checkPermission(Integer userId) {
         User user = userMapper.selectById(userId);
         Integer type = user.getUserType();
-        if (type != 2&&type!= 3) {
+        if (type != 2 && type != 3) {
             throw new ApiException(ExceptionEnum.PERMISSION_NOT_ALLOWED);
         }
     }
@@ -78,15 +77,16 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
-      帖子上传图片
+     * 帖子上传图片
      */
     @Override
     @CacheEvict(value = postCache, allEntries = true)
     public void postImage(Integer postId, String imageUrl) {
         Post post = postMapper.selectById(postId);
         post.setImage(imageUrl);
-        postMapper.updateById( post);
+        postMapper.updateById(post);
     }
+
     /**
      * 查看自己帖子
      */
@@ -99,6 +99,7 @@ public class PostServiceImpl implements PostService {
         }
         return posts;
     }
+
     /**
      * 评论帖子
      */
@@ -106,9 +107,10 @@ public class PostServiceImpl implements PostService {
     @CacheEvict(value = postCache, allEntries = true)
     public void comment(Integer userId, Integer postId, String comment) {
         Post post = getPostIfExists(postId);
-        post.setComment( comment);
+        post.setComment(comment);
         postMapper.updateById(post);
     }
+
     /**
      * 获取帖子
      */
@@ -125,13 +127,14 @@ public class PostServiceImpl implements PostService {
                     new LambdaQueryWrapper<Response>().eq(Response::getPostId, post.getPostId())
             );
             post.setResponse(response);
-            if (post.getHide() == 1){
+            if (post.getHide() == 1) {
                 post.setUserId(-1);
                 post.setUsername("匿名用户");
             }
         }
         return posts;
     }
+
     /**
      * 管理员回复帖子
      */

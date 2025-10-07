@@ -24,6 +24,7 @@ public class AcceptanceController {
         acceptanceService.acceptPost(userId, postId);
         return AjaxResult.success();
     }
+
     @GetMapping("/admin/select")
     public AjaxResult<List<Post>> getAcceptPosts(@CurrentUserId Integer userId) {
         List<Post> posts = acceptanceService.getAcceptPosts(userId);
@@ -31,13 +32,14 @@ public class AcceptanceController {
     }
 
     @PutMapping("/admin/delete_accept")
-    public AjaxResult<Void> deleteAccept(@Valid @RequestParam Integer acceptanceId,@CurrentUserId Integer userId) {
+    public AjaxResult<Void> deleteAccept(@Valid @RequestParam Integer acceptanceId, @CurrentUserId Integer userId) {
         acceptanceService.deleteAccept(userId, acceptanceId);
         return AjaxResult.success();
     }
+
     @PutMapping("/admin/resolve")
     public AjaxResult<Void> resolvePost(@Valid @RequestParam Integer acceptanceId, @CurrentUserId Integer userId) {
-        acceptanceService.resolvePost(userId,acceptanceId);
+        acceptanceService.resolvePost(userId, acceptanceId);
         return AjaxResult.success();
     }
 }

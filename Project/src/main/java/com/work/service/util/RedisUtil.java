@@ -1,8 +1,8 @@
 package com.work.service.util;
 
 import jakarta.annotation.Resource;
-import org.springframework.stereotype.Component;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.concurrent.TimeUnit;

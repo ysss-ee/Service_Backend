@@ -47,7 +47,7 @@ public class RedisConfig {
                                 new GenericJackson2JsonRedisSerializer()));
 
         return RedisCacheManager.builder(factory)
-                        .cacheDefaults(config)
-                        .build();
+                .cacheDefaults(config)
+                .build();
     }
 }

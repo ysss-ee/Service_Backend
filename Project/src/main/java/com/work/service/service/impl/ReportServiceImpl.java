@@ -47,21 +47,21 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @CacheEvict(value = "report", allEntries = true)
-    public void markReport(Integer userId, Integer postId, String reason){
+    public void markReport(Integer userId, Integer postId, String reason) {
         checkUserType(userId);
         LambdaQueryWrapper<Report> reportQueryWrapper = new LambdaQueryWrapper<>();
         reportQueryWrapper.eq(Report::getPostId, postId);
-        Report report=reportMapper.selectOne(reportQueryWrapper);
-        if(report ==null){
-            Post post =postMapper.selectById(postId);
-            report= Report.builder().postId(postId).reason(reason).content(post.getContent()).build();
+        Report report = reportMapper.selectOne(reportQueryWrapper);
+        if (report == null) {
+            Post post = postMapper.selectById(postId);
+            report = Report.builder().postId(postId).reason(reason).content(post.getContent()).build();
             reportMapper.insert(report);
         }
     }
 
     @Override
-    @Cacheable(value = "report", key = "all")
-    public List<Report> getAllReports(Integer userId){
+    @Cacheable(value = "report", key = "'all'")
+    public List<Report> getAllReports(Integer userId) {
         checkUserType3(userId);
         LambdaQueryWrapper<Report> reportQueryWrapper = new LambdaQueryWrapper<>();
         reportQueryWrapper.orderByDesc(Report::getReportId);
@@ -70,26 +70,28 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @CacheEvict(value = "report", allEntries = true)
-    public void reviewReport(Integer userId, Integer reportId, Integer approval){
+    public void reviewReport(Integer userId, Integer reportId, Integer approval) {
         checkUserType3(userId);
-        Report report=reportMapper.selectById(reportId);
-        if(report ==null){
+        Report report = reportMapper.selectById(reportId);
+        if (report == null) {
             throw new ApiException(ExceptionEnum.RESOURCE_NOT_FOUND);
         }
-        if(approval==1) {
+        if (approval == 1) {
             Post post = postMapper.selectById(report.getPostId());
             post.setLevel(0);
+            post.setState(4);
             postMapper.updateById(post);
         }
     }
 
     @Override
-    public void deletePost(Integer userId, Integer postId){
+    public void deletePost(Integer userId, Integer postId) {
         checkUserType3(userId);
-        Post post=postMapper.selectById(postId);
+        Post post = postMapper.selectById(postId);
         post.setLevel(0);
+        post.setState(4);
         postMapper.updateById(post);
-        Integer acceptUserId=post.getAcceptUserId();
-        messageService.reportMessage(acceptUserId,postId);
+        Integer acceptUserId = post.getAcceptUserId();
+        messageService.reportMessage(acceptUserId, postId);
     }
 }

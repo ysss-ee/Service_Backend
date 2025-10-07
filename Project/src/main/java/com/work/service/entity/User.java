@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 /**
  * &#064;TableName  user
  */
-@TableName(value ="user")
+@TableName(value = "user")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
-    @TableId(value = "user_id" ,type = IdType.AUTO )
+    @TableId(value = "user_id", type = IdType.AUTO)
     private Integer userId;
 
     private String username;

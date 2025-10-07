@@ -11,6 +11,7 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -21,11 +22,11 @@ public class PostController {
     private PostService postService;
 
 
-    @PostMapping(value="/student/post")
+    @PostMapping(value = "/student/post")
 
     public AjaxResult<Void> publishPost(@Valid @RequestBody PublishRequest post
-                                        , @CurrentUserId Integer userId) {
-        postService.publish( userId, post.getTitle(), post.getContent(), post.getLevel(), post.getHide());
+            , @CurrentUserId Integer userId) {
+        postService.publish(userId, post.getTitle(), post.getContent(), post.getLevel(), post.getHide());
         return AjaxResult.success();
     }
 
@@ -37,19 +38,19 @@ public class PostController {
 
     @PostMapping("/student/comment")
     public AjaxResult<Void> comment(@Valid @RequestBody CommentRequest comment
-                                    ,@CurrentUserId Integer userId) {
+            , @CurrentUserId Integer userId) {
         postService.comment(userId, comment.getPostId(), comment.getContent());
         return AjaxResult.success();
     }
 
     @GetMapping("/admin/getAllPosts")
     public AjaxResult<List<Post>> getPosts(@CurrentUserId Integer userId) {
-        List<Post> posts =postService.getPosts(userId);
+        List<Post> posts = postService.getPosts(userId);
         return AjaxResult.success(posts);
     }
 
     @PostMapping("/admin/response")
-    public AjaxResult<Void> response(@Valid @RequestBody ResponseRequest response,@CurrentUserId Integer userId) {
+    public AjaxResult<Void> response(@Valid @RequestBody ResponseRequest response, @CurrentUserId Integer userId) {
         postService.response(userId, response.getPostId(), response.getContent());
         return AjaxResult.success();
     }

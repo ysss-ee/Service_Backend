@@ -1,7 +1,6 @@
 package com.work.service.controller;
 
 import com.work.service.Result.AjaxResult;
-import com.work.service.constant.ExceptionEnum;
 import com.work.service.dto.request.LoginRequest;
 import com.work.service.dto.request.RegRequest;
 import com.work.service.dto.request.UpdateRequest;
@@ -25,21 +24,24 @@ public class UserController {
 
     @PostMapping("/reg")
     public AjaxResult<RegResponse> reg(@Valid @RequestBody RegRequest request) {
-        Integer userId =userService.reg(request.getUsername(),request.getPassword(),request.getEmail());
+        Integer userId = userService.reg(request.getUsername(), request.getPassword(), request.getEmail());
         return AjaxResult.success(new RegResponse(userId));
     }
+
     @PostMapping("/login")
-    public AjaxResult<LogResponse> login(@Valid @RequestBody LoginRequest request){
-        LogResponse logResponse =userService.login(request.getUserId(), request.getPassword());
+    public AjaxResult<LogResponse> login(@Valid @RequestBody LoginRequest request) {
+        LogResponse logResponse = userService.login(request.getUsername(), request.getPassword());
         return AjaxResult.success(logResponse);
     }
+
     @PutMapping("/update")
-    public AjaxResult<String> update(@Valid @RequestBody UpdateRequest request,@CurrentUserId Integer userId){
-        userService.update(userId,request.getObject(),request.getContent());
+    public AjaxResult<String> update(@Valid @RequestBody UpdateRequest request, @CurrentUserId Integer userId) {
+        userService.update(userId, request.getKey(), request.getValue());
         return AjaxResult.success("更新个人信息成功");
     }
+
     @GetMapping("/information")
-    public AjaxResult<InformationResponse>  information(@CurrentUserId Integer userId){
+    public AjaxResult<InformationResponse> information(@CurrentUserId Integer userId) {
         InformationResponse Information = userService.Information(userId);
         return AjaxResult.success(Information);
     }

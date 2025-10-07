@@ -12,13 +12,13 @@ import java.sql.Timestamp;
 /**
  * &#064;TableName  response
  */
-@TableName(value ="response")
+@TableName(value = "response")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Response {
-    @TableId(value = "user_id" )
+    @TableId(value = "user_id")
     private Integer userId;
     private Integer postId;
     private String content;

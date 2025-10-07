@@ -48,7 +48,7 @@ public class MessageServiceImpl implements MessageService {
                 .acceptUserId(acceptUserId)
                 .content("您的反馈" + postId + "已被管理员/{adminName}处理完成。")
                 .build();
-        messageMapper.insert( message);
+        messageMapper.insert(message);
 
     }
 

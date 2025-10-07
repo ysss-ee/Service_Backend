@@ -13,6 +13,7 @@ import com.work.service.service.AcceptanceService;
 import jakarta.annotation.Resource;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,7 +46,7 @@ public class AcceptanceServiceImpl implements AcceptanceService {
     private String checkPermission(Integer userId) {
         User user = userMapper.selectById(userId);
         Integer type = user.getUserType();
-        if (type != 2&&type!= 3) {
+        if (type != 2 && type != 3) {
             throw new ApiException(ExceptionEnum.PERMISSION_NOT_ALLOWED);
         }
         return user.getUsername();
@@ -59,9 +60,11 @@ public class AcceptanceServiceImpl implements AcceptanceService {
      * 发送消息
      */
     @Override
-    @CacheEvict(value = "acceptPosts", key = "#userId")
+    @Caching(evict = {
+            @CacheEvict(value = "acceptPosts", key = "#userId"),
+            @CacheEvict(value = "post", allEntries = true)})
     public void acceptPost(Integer userId, Integer postId) {
-        String adminName =checkPermission(userId);
+        String adminName = checkPermission(userId);
 
         Post post = getPostIfExists(postId);
         post.setState(2);
@@ -75,8 +78,9 @@ public class AcceptanceServiceImpl implements AcceptanceService {
                 .build();
         acceptanceMapper.insert(acceptance);
 
-        messageService.acceptMessage(adminName,userId,postId);
+        messageService.acceptMessage(adminName, userId, postId);
     }
+
     /**
      * 获取接单的帖子
      */
@@ -91,6 +95,7 @@ public class AcceptanceServiceImpl implements AcceptanceService {
         }
         return posts;
     }
+
     /**
      * 取消接单
      * 修改post的状态
@@ -98,9 +103,11 @@ public class AcceptanceServiceImpl implements AcceptanceService {
      * 发送消息
      */
     @Override
-    @CacheEvict(value = "acceptPosts", key = "#userId")
-    public void deleteAccept(Integer userId,Integer acceptanceId) {
-        Acceptance acceptance  = acceptanceMapper.selectById(acceptanceId);
+    @Caching(evict = {
+            @CacheEvict(value = "acceptPosts", key = "#userId"),
+            @CacheEvict(value = "post", allEntries = true)})
+    public void deleteAccept(Integer userId, Integer acceptanceId) {
+        Acceptance acceptance = acceptanceMapper.selectById(acceptanceId);
         Integer postId = acceptance.getPostId();
         Post post = getPostIfExists(postId);
         post.setState(1);
@@ -110,8 +117,9 @@ public class AcceptanceServiceImpl implements AcceptanceService {
         acceptance.setDeleteTime(new java.sql.Date(System.currentTimeMillis()));
         acceptanceMapper.updateById(acceptance);
 
-        messageService.deleteAccept(acceptance.getUserId(),postId);
+        messageService.deleteAccept(acceptance.getUserId(), postId);
     }
+
     /**
      * 处理完成
      * 修改post的状态
@@ -119,8 +127,10 @@ public class AcceptanceServiceImpl implements AcceptanceService {
      * 发送消息
      */
     @Override
-    @CacheEvict(value = "acceptPosts", key = "#userId")
-    public void resolvePost(Integer userId,Integer acceptanceId) {
+    @Caching(evict = {
+            @CacheEvict(value = "acceptPosts", key = "#userId"),
+            @CacheEvict(value = "post", allEntries = true)})
+    public void resolvePost(Integer userId, Integer acceptanceId) {
         Acceptance acceptance = acceptanceMapper.selectById(acceptanceId);
         Integer postId = acceptance.getPostId();
         Post post = postMapper.selectById(postId);
@@ -131,6 +141,6 @@ public class AcceptanceServiceImpl implements AcceptanceService {
         acceptance.setState(2);
         acceptanceMapper.updateById(acceptance);
 
-        messageService.resolveMessage(post.getUserId(),postId);
+        messageService.resolveMessage(post.getUserId(), postId);
     }
 }

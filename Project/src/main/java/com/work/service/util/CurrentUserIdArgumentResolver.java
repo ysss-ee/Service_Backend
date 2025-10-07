@@ -11,8 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 // 创建参数解析器
 @Component
-public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResolver
-{
+public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Resource
     private
@@ -25,9 +24,9 @@ public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResol
 
     @Override
     public Object resolveArgument(MethodParameter parameter,
-                                 ModelAndViewContainer mavContainer,
-                                 NativeWebRequest webRequest,
-                                 WebDataBinderFactory binderFactory) throws Exception {
+                                  ModelAndViewContainer mavContainer,
+                                  NativeWebRequest webRequest,
+                                  WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = request.getHeader("Authorization").substring(7);
         Integer userId = Integer.valueOf(jwtUtil.extractUserId(token));

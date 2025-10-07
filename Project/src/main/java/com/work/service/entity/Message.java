@@ -13,13 +13,13 @@ import java.sql.Timestamp;
 /**
  * &#064;TableName  message
  */
-@TableName(value ="message")
+@TableName(value = "message")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Message {
-    @TableId(value = "id",type = IdType.AUTO )
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
     private Integer acceptUserId;
     private String content;

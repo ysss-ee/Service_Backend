@@ -1,7 +1,7 @@
 package com.work.service.service;
+
 import com.work.service.entity.Post;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -12,11 +12,16 @@ import java.util.List;
  */
 @Service
 public interface PostService {
-    void publish(Integer  userId, String title, String content, Integer level, Integer hide);
+    void publish(Integer userId, String title, String content, Integer level, Integer hide);
+
     void postImage(Integer postId, String ImageUrl);
+
     List<Post> check(Integer userId);
+
     void comment(Integer userId, Integer postId, String comment);
+
     List<Post> getPosts(Integer userId);
+
     void response(Integer userId, Integer postId, String response);
 //    void acceptPost(Integer userId, Integer postId);
 //    List<Post> getAcceptPosts(Integer userId);
